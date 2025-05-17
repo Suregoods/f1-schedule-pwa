@@ -1,4 +1,3 @@
-<!-- app.js -->
 (async () => {
   const API_URL = 'https://ergast.com/api/f1/current.json';
   try {
