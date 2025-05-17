@@ -5,25 +5,34 @@
     const data = await res.json();
     const races = data.MRData.RaceTable.Races;
     const sessions = [];
+
     races.forEach(race => {
+      // Practice and qualifying sessions if available
       const mapping = {
         FirstPractice: 'Practice 1',
         SecondPractice: 'Practice 2',
         ThirdPractice: 'Practice 3',
         Qualifying: 'Qualifying',
-        Sprint: 'Sprint',
-        Race: 'Race'
+        Sprint: 'Sprint'
       };
-      Object.keys(mapping).forEach(key => {
-        if (race[key]) {
+      Object.entries(mapping).forEach(([key, label]) => {
+        if (race[key] && race[key].date && race[key].time) {
           sessions.push({
-            name: `${race.raceName} – ${mapping[key]}`,
+            name: `${race.raceName} – ${label}`,
             dateTime: new Date(`${race[key].date}T${race[key].time}`)
           });
         }
       });
+      // Main race session
+      if (race.date && race.time) {
+        sessions.push({
+          name: `${race.raceName} – Race`,
+          dateTime: new Date(`${race.date}T${race.time}`)
+        });
+      }
     });
-    // Filter out past sessions
+
+    // Filter future sessions and sort
     const now = new Date();
     const upcoming = sessions
       .filter(s => s.dateTime >= now)
@@ -56,8 +65,13 @@
       card.appendChild(timeEl);
       container.appendChild(card);
     });
-  } catch (e) {
-    console.error(e);
-    document.getElementById('sessions').innerHTML = '<p>Failed to load schedule.</p>';
+  } catch (error) {
+    console.error('Error loading schedule:', error);
+    const container = document.getElementById('sessions');
+    if (container) {
+      container.innerHTML = '<p>Failed to load schedule.</p>';
+    } else {
+      document.body.innerHTML = '<p>Failed to load schedule.</p>';
+    }
   }
 })();
