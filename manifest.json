@@ -2,11 +2,11 @@
 {
   "name": "F1 Weekend Schedule",
   "short_name": "F1Sched",
-  "description": "View F1 weekend sessions in local time",
+  "description": "Upcoming F1 sessions in local time",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#d00",
+  "theme_color": "#e10600",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
@@ -14,11 +14,11 @@
 }
 
 <!-- sw.js -->
-const CACHE_NAME = 'f1-schedule-cache-v1';
+const CACHE_NAME = 'f1-schedule-cache-v2';
 const assets = ['.', 'index.html', 'app.js', 'manifest.json'];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(assets)));
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(assets)));
 });
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+self.addEventListener('fetch', event => {
+  event.respondWith(caches.match(event.request).then(r => r || fetch(event.request)));
 });
