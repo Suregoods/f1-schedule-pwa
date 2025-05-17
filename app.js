@@ -59,6 +59,6 @@
     });
   } catch (e) {
     console.error(e);
-    document.body.innerHTML = '<p>Failed to load schedule.</p>';
+    document.getElementById('sessions').innerHTML = '<p>Failed to load schedule.</p>';
   }
 })();
