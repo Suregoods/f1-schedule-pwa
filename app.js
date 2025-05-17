@@ -1,5 +1,8 @@
 (async () => {
-  const API_URL = 'https://ergast.com/api/f1/current.json';
+  // Dynamically fetch the schedule for the current year
+  const currentYear = new Date().getFullYear();
+  const API_URL = `https://ergast.com/api/f1/${currentYear}.json`;
+
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
@@ -7,7 +10,6 @@
     const sessions = [];
 
     races.forEach(race => {
-      // Practice and qualifying sessions if available
       const mapping = {
         FirstPractice: 'Practice 1',
         SecondPractice: 'Practice 2',
@@ -23,7 +25,6 @@
           });
         }
       });
-      // Main race session
       if (race.date && race.time) {
         sessions.push({
           name: `${race.raceName} – Race`,
@@ -32,7 +33,6 @@
       }
     });
 
-    // Filter future sessions and sort
     const now = new Date();
     const upcoming = sessions
       .filter(s => s.dateTime >= now)
@@ -49,6 +49,7 @@
       container.innerHTML = '<p>No upcoming sessions found.</p>';
       return;
     }
+
     upcoming.forEach(s => {
       const card = document.createElement('div');
       card.className = 'session-card';
