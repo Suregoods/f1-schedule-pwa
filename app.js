@@ -18,23 +18,44 @@
       Object.keys(mapping).forEach(key => {
         if (race[key]) {
           sessions.push({
-            name: `${race.raceName} - ${mapping[key]}`,
+            name: `${race.raceName} – ${mapping[key]}`,
             dateTime: new Date(`${race[key].date}T${race[key].time}`)
           });
         }
       });
     });
-    sessions.sort((a, b) => a.dateTime - b.dateTime);
-    const tbody = document.querySelector('#schedule tbody');
-    const formatter = new Intl.DateTimeFormat('default', {
-      dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Amsterdam'
+    // Filter out past sessions
+    const now = new Date();
+    const upcoming = sessions
+      .filter(s => s.dateTime >= now)
+      .sort((a, b) => a.dateTime - b.dateTime);
+
+    const container = document.getElementById('sessions');
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'Europe/Amsterdam'
     });
-    sessions.forEach(s => {
-      const tr = document.createElement('tr');
-      const tdName = document.createElement('td'); tdName.textContent = s.name;
-      const tdTime = document.createElement('td'); tdTime.textContent = formatter.format(s.dateTime);
-      tr.appendChild(tdName); tr.appendChild(tdTime);
-      tbody.appendChild(tr);
+
+    if (!upcoming.length) {
+      container.innerHTML = '<p>No upcoming sessions found.</p>';
+      return;
+    }
+    upcoming.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'session-card';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'session-name';
+      nameEl.textContent = s.name;
+
+      const timeEl = document.createElement('div');
+      timeEl.className = 'session-time';
+      timeEl.textContent = formatter.format(s.dateTime);
+
+      card.appendChild(nameEl);
+      card.appendChild(timeEl);
+      container.appendChild(card);
     });
   } catch (e) {
     console.error(e);
